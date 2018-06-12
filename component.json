@@ -2,9 +2,9 @@
   "name": "slam",
   "dependencies": {
     "component/emitter": "*",
-    "component/mousetrap": "*",
+    "components/mousetrap": "*",
     "component/cookie": "*",
-    "component/jquery": "1.9.1",
+    "components/jquery": "*",
     "component/preloader": "*",
     "publicclass/rtc": "*",
     "publicclass/request-animation-frame": "*",
@@ -16,7 +16,7 @@
     "publicclass/latency": "*",
     "publicclass/base64-arraybuffer": "*",
     "visionmedia/debug": "*",
-    "ecarter/css-emitter": "4a453ae914a2cf328810fdf3fc361bc144b15821"
+    "ecarter/css-emitter": "*"
   },
   "scripts": [
     "index.js",

@@ -9,7 +9,7 @@ var result = {
   '@@locale': 'en-US',
   '@@context': 'Cube Slam'
 };
-
+/*
 files.forEach(function(file){
   jsdom.env({
     html: fs.readFileSync(file, 'utf8'),
@@ -27,6 +27,15 @@ files.forEach(function(file){
     }
   });
 })
+*/
+
+//var jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const { window } = new JSDOM();
+const { document } = (new JSDOM('')).window;
+global.document = document;
+
+var $ = jQuery = require('jquery')(window);
 
 function done(){
   process.stdout.write('arb.register(\'cubeslam:en-US\',');

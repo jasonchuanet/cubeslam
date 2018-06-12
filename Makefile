@@ -62,8 +62,10 @@ deploy-goggles1: prepare-deploy
 deploy-webrtc: prepare-deploy
 	support/deploy webrtcgame $(v)
 
-node_modules/:
+npm:
 	npm install
+
+node_modules: npm
 
 components/: node_modules
 	node_modules/.bin/component-install
@@ -104,7 +106,7 @@ build/build-3d.js: $(LIB_3D) $(GEOMETRY_JS) $(SHADERS_JS)
 build/build-css.js: $(LIB_CSS)
 	(cd lib/renderer-css && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
 
-build/build.js: components $(COMPONENTS) $(LIB) component.json
+build/build.js: components/ $(COMPONENTS) $(LIB) component.json
 	node_modules/.bin/component-build $(DEV)
 
 lang/arbs/en-US.arb: build/*.html
@@ -117,7 +119,8 @@ public/lang/%.arb: lang/arbs/%.arb
 	ln -s ../../$< $@
 
 clean: clean-geometry clean-localization
-	rm -Rf build/ components/ $(SHADERS_JS)
+	#rm -Rf build/ components/ $(SHADERS_JS) node_modules/ package-lock.json
+	rm -Rf build/ $(SHADERS_JS) node_modules/ package-lock.json public/javascript/%.min.js
 
 clean-localization:
 	rm -Rf $(GENERATED_LANGUAGES)
@@ -138,8 +141,8 @@ server.conf: server.conf.sample
 proxy: server.conf
 	mkdir -p /tmp/nginx/pong
 	ln -sf "${PWD}/server.conf" /tmp/nginx/pong/server.conf
-	nginx -s reload || nginx
-	dev_appserver.py --host 0.0.0.0 --clear_datastore --automatic_restart --admin_port 8082 --port 8081 . || dev_appserver.py -a 0.0.0.0 -c -p 8081 .
+	/usr/sbin/nginx -s reload || /usr/sbin/nginx 
+	/home/jason/google-cloud-sdk/bin/dev_appserver.py --host 0.0.0.0 --clear_datastore --automatic_restart --admin_port 8082 --port 8081 . #|| /home/jason/google-cloud-sdk/bin/dev_appserver.py -a 0.0.0.0 -c -p 8081 .
 
 test:
 	node test/buffer.js

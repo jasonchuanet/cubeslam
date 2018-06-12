@@ -64,10 +64,10 @@ skip_files:
 - ^(.*/)?test/.*$
 - ^(.*/)?ui/.*$
 
-pagespeed:
-  domains_to_rewrite:
-  - www.cubeslam.com
-  - https://www.cubeslam.com
-  disabled_rewriters:
-  - LazyloadImages
-  - lazyload_images
+#pagespeed:
+#  domains_to_rewrite:
+#  - www.cubeslam.com
+#  - https://www.cubeslam.com
+#  disabled_rewriters:
+#  - LazyloadImages
+#  - lazyload_images

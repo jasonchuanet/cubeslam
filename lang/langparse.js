@@ -9,7 +9,6 @@ var result = {
   '@@locale': 'en-US',
   '@@context': 'Cube Slam'
 };
-/*
 files.forEach(function(file){
   jsdom.env({
     html: fs.readFileSync(file, 'utf8'),
@@ -27,7 +26,7 @@ files.forEach(function(file){
     }
   });
 })
-*/
+
 
 //var jsdom = require('jsdom');
 const { JSDOM } = jsdom;

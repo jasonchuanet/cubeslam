@@ -15,8 +15,9 @@
     "publicclass/netchan": "*",
     "publicclass/latency": "*",
     "publicclass/base64-arraybuffer": "*",
-    "visionmedia/debug": "*",
-    "ecarter/css-emitter": "*"
+    "visionmedia/debug": "2.6.8",
+    "ecarter/css-emitter": "*",
+    "rauchg/ms": "0.7.1"
   },
   "scripts": [
     "index.js",

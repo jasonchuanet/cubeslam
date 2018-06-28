@@ -17,10 +17,10 @@ LINKED_LANGUAGES=$(patsubst lang/arbs/%.arb,public/lang/%.arb,$(AVAILABLE_LANGUA
 
 REQUIRE_PATH=$(shell find node_modules -name 'require.js' -type f | head -n 1)
 REQUIRE_LINES=$(shell wc -l < $(REQUIRE_PATH) | tr -d ' ')
+REQUIRE_LINES=21
 
 DEV?=--dev
 DEBUG?=true
-
 # adding special cased geometry
 GEOMETRY_JS += lib/renderer-3d/geometry/terrain3.js lib/renderer-3d/geometry/bear.js \
 							 lib/renderer-3d/geometry/paw.js lib/renderer-3d/geometry/rabbit.js \
@@ -101,10 +101,14 @@ build/build-stylus.css: $(STYLUS)
 	node_modules/.bin/stylus --use nib < stylesheets/screen.styl --include-css -I stylesheets > $@
 
 build/build-3d.js: $(LIB_3D) $(GEOMETRY_JS) $(SHADERS_JS)
-	(cd lib/renderer-3d && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	cd lib/renderer-3d && ../../node_modules/.bin/component build
+	(cd lib/renderer-3d && sed -e 1,$(REQUIRE_LINES)d ./build/build.js | cat - aliases.js) > $@
+	#(cd lib/renderer-3d && cat ./build/build.js && cat aliases.js) > $@
 
 build/build-css.js: $(LIB_CSS)
-	(cd lib/renderer-css && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	cd lib/renderer-css && ../../node_modules/.bin/component build
+	(cd lib/renderer-css && sed -e 1,$(REQUIRE_LINES)d ./build/build.js | cat - aliases.js) > $@
+	#(cd lib/renderer-css && cat ./build/build.js && cat aliases.js) > $@
 
 build/build.js: components/ $(COMPONENTS) $(LIB) component.json
 	node_modules/.bin/component-build $(DEV)
@@ -120,7 +124,7 @@ public/lang/%.arb: lang/arbs/%.arb
 
 clean: clean-geometry clean-localization
 	#rm -Rf build/ components/ $(SHADERS_JS) node_modules/ package-lock.json
-	rm -Rf build/ $(SHADERS_JS) node_modules/ package-lock.json public/javascript/%.min.js
+	rm -Rf build/ $(SHADERS_JS) package-lock.json public/javascript/%.min.js
 
 clean-localization:
 	rm -Rf $(GENERATED_LANGUAGES)
@@ -157,4 +161,5 @@ test:
 .PHONY: test proxy clean clean-geometry clean-localization \
 				build build-min build-shaders build-styles force-build \
 				build-geometry build-component build-localization \
-				prepare-deploy deploy-webrtc deploy-goggles1 deploy-goggles deploy-einar deploy-alfred
+				prepare-deploy deploy-webrtc deploy-goggles1 deploy-goggles deploy-einar deploy-alfred \
+				npm

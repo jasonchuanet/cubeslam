@@ -4,6 +4,7 @@ const { once } = require("node:events");
 const { chromium } = require("playwright");
 const { createApp } = require("../server");
 const gravityWellScoring = require("./gravity-well");
+const highRefresh = require("./high-refresh");
 (async () => {
   let app;
   let base = process.env.TEST_BASE_URL;
@@ -70,6 +71,10 @@ const gravityWellScoring = require("./gravity-well");
       "Passed 3D single-player, audio initialization and advancing simulation",
     );
     await single.close();
+
+    const refresh = await page();
+    await highRefresh(refresh, base);
+    await refresh.close();
 
     for (const level of [4, 5]) {
       const gravity = await page();

@@ -34,12 +34,25 @@ docker compose -f compose.yaml -f compose.build.yaml up --build -d
 The Docker build runs backend and simulation tests before producing the runtime
 image. `make docker` runs the same command.
 
+## Rendering and physics
+
+Rendering follows the browser's `requestAnimationFrame` cadence, including
+120 Hz, 144 Hz and 240 Hz displays. Motion interpolates between fixed physics
+updates; visual animations use elapsed time. Physics remains at 60 Hz for solo
+play and 30 Hz for multiplayer, with the existing speeds and network behavior.
+The `framerate` debug query and the **Physics rate (Hz)** control change the
+simulation rate, so leave them at their defaults for normal gameplay.
+
 ## Validation
 
 `npm test` exercises HTTP serving, safe context rendering, room pairing and
 capacity, signaling, disconnect cleanup, ICE configuration and audio cleanup,
 plus the original buffer, input, hash, state-machine and frame-scheduler checks.
 Assertions cause a nonzero exit on failure.
+
+Frame-rate regression tests compare the complete physics state across simulated
+display rates, including Gravity Well, and check animation timing and paddle
+interpolation. The browser suite also verifies visual timing at 60/120/144/240 Hz.
 
 The optional browser image includes Chromium from signed Debian packages:
 

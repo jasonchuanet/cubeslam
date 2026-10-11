@@ -11,7 +11,7 @@
     "build": "node scripts/build.js",
     "start": "node server/index.js",
     "dev": "npm run build && node --watch server/index.js",
-    "test": "node --test test/server.test.js && node scripts/test-legacy.js",
+    "test": "node --test test/*.test.js && node scripts/test-legacy.js",
     "test:browser": "node test/browser.js"
   },
   "dependencies": {

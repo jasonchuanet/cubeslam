@@ -37,9 +37,9 @@ image. `make docker` runs the same command.
 ## Validation
 
 `npm test` exercises HTTP serving, safe context rendering, room pairing and
-capacity, signaling, disconnect cleanup and ICE configuration, plus the original
-buffer, input, hash, state-machine and frame-scheduler checks. Assertions cause a
-nonzero exit on failure.
+capacity, signaling, disconnect cleanup, ICE configuration and audio cleanup,
+plus the original buffer, input, hash, state-machine and frame-scheduler checks.
+Assertions cause a nonzero exit on failure.
 
 The optional browser image includes Chromium from signed Debian packages:
 
@@ -48,7 +48,8 @@ docker build --target browser-tests -t cubeslam-browser-tests .
 docker run --rm --shm-size=1g cubeslam-browser-tests
 ```
 
-This suite starts its own server, checks 3D single-player with audio startup, CSS
+This suite starts its own server, checks 3D single-player with audio startup,
+scoring and level progression with Gravity Well active on levels 4 and 5, CSS
 fallback gameplay, and two browsers exchanging WebRTC video and game data. It
 also checks disconnect handling and that the app makes no external requests.
 For a locally installed Chromium, use

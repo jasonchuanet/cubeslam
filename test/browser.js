@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const { once } = require("node:events");
 const { chromium } = require("playwright");
 const { createApp } = require("../server");
+const gravityWellScoring = require("./gravity-well");
 (async () => {
   let app;
   let base = process.env.TEST_BASE_URL;
@@ -69,6 +70,12 @@ const { createApp } = require("../server");
       "Passed 3D single-player, audio initialization and advancing simulation",
     );
     await single.close();
+
+    for (const level of [4, 5]) {
+      const gravity = await page();
+      await gravityWellScoring(gravity, base, level);
+      await gravity.close();
+    }
 
     const mobile = await page();
     await mobile.goto(base + "/mobile?mobile&silent&play&god");

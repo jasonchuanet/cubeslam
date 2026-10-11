@@ -1,0 +1,14 @@
+{
+  "name": "copy",
+  "version": "0.2.0",
+  "dependencies": {
+    "component/type": "*"
+  },
+  "devDependencies": {
+    "visionmedia/mocha": "*",
+    "guille/expect.js": "*"
+  },
+  "scripts": [
+    "index.js"
+  ]
+}

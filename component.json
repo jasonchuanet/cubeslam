@@ -1,23 +1,5 @@
 {
   "name": "slam",
-  "dependencies": {
-    "component/emitter": "*",
-    "component/mousetrap": "*",
-    "component/cookie": "*",
-    "component/jquery": "1.9.1",
-    "component/preloader": "*",
-    "publicclass/rtc": "*",
-    "publicclass/request-animation-frame": "*",
-    "publicclass/now": "*",
-    "publicclass/geom": "*",
-    "publicclass/copy": "*",
-    "publicclass/stash": "*",
-    "publicclass/netchan": "*",
-    "publicclass/latency": "*",
-    "publicclass/base64-arraybuffer": "*",
-    "visionmedia/debug": "*",
-    "ecarter/css-emitter": "4a453ae914a2cf328810fdf3fc361bc144b15821"
-  },
   "scripts": [
     "index.js",
     "lib/tracking.js",

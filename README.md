@@ -1,101 +1,137 @@
-Cube Slam
-=========
+# Cube Slam
 
-Cube Slam is a WebRTC Chrome Experiment that you can play face-to-face against your friends.
+Cube Slam is a browser game you can play against Bob the bear or face-to-face
+with a friend. This version runs on your own server with Node.js 24 and Docker.
+It requires no Google Cloud account, App Engine SDK, database, hosted signaling
+service, remote fonts, or analytics. All game assets are served locally.
 
-## Building
+## Run with Docker
 
-  **Requirements:**
+Install Docker Engine and Docker Compose, then run:
 
-  * python (2.7.2 tested)
-  * node (0.8.x tested)
-  * make (GNU Make 3.81 tested, should come with xcode dev tools on mac)
+```sh
+docker compose up --build -d
+docker compose logs -f cubeslam
+```
 
-  Building is done using a `Makefile` which in turn uses `npm` and `component` for packages and `jade` and `stylus` for templating.
+Open port 8080 on the same machine. The default binding is `127.0.0.1`; set
+`BIND_ADDRESS=0.0.0.0` to expose development HTTP on your network. The image builds
+the app and runs the backend and simulation tests before producing a non-root,
+read-only runtime. `GET /healthz` is the health check. Stop with
+`docker compose down`.
 
-  But to get started all you have to do it make sure `python` and `node` is installed and then:
+Click **Play A Bear** for single-player or **Play A Friend** and share the room
+URL. A room accepts two players and exists only while they are connected.
+Restarting the server disconnects players and clears all rooms. Use one server
+instance; multiple replicas need shared signaling and are not supported.
 
-    $ make
+## Public hosting and HTTPS
 
-  While developing I'd recommend using [watch](http://github.com/visionmedia/watch) so you don't have to keep running that command manually. The Makefile is set up to only run whenever something changes.
+Camera and microphone access require a secure browser context: localhost or
+HTTPS. HTTP on a remote IP address is sufficient for single-player, but browsers
+will deny the camera needed for face-to-face multiplayer. Use current Chromium,
+Firefox, or Safari with WebRTC enabled; the automated browser suite uses Chromium.
 
+You can put the app behind an existing HTTPS reverse proxy. Preserve the `Host`
+header and forward WebSocket upgrades for `/signal` to port 8080. An optional
+Caddy configuration handles both WebSockets and automatic TLS:
 
-## Testing
+```sh
+# Point this hostname's DNS at your server and open TCP 80/443.
+DOMAIN=slam.example.org docker compose -f compose.yaml -f compose.https.yaml up --build -d
+```
 
-  **Requirements:**
+Caddy retains its TLS certificates in named volumes. The application itself uses
+no external service. Caddy's automatic certificate issuance contacts an ACME
+certificate authority; you can use your own reverse proxy and certificates.
 
-  * Go App Engine (`brew install go-app-engine-64`)
+## Your own STUN/TURN relay
 
-  To get it up and running on a local machine the app engine dev server must be up and running. Start it with:
+The default `ICE_SERVERS=[]` uses direct peer connections and makes no request
+to a third-party STUN or TURN provider. It works when the players' browsers can
+reach one another, such as on the same network. Players behind different NATs,
+restrictive firewalls, or a browser policy that blocks direct UDP may need TURN.
 
-    $ dev_appserver.py .
+Run your own [coturn](https://github.com/coturn/coturn) server. A starting
+configuration is in `deploy/turnserver.conf.example`; set its public address,
+realm and shared secret, and open its listening and relay ports. For networks
+that block UDP, configure coturn's TCP or TLS listener as appropriate.
 
-  or use an nginx proxy to take care of the static files using:
+Copy `.env.example` to `.env` and set:
 
-    $ make proxy # and follow the instructions...
+```dotenv
+TURN_URLS=turn:turn.example.org:3478?transport=udp,turn:turn.example.org:3478?transport=tcp
+TURN_SECRET=the-same-secret-configured-in-coturn
+```
 
+The application gives browsers credentials that expire after one hour. It never
+sends the shared secret to a browser. This is a guest game: anyone who can access
+the app can obtain a temporary relay credential, so restrict access to the app
+or relay if you are hosting for a private group. `.env` is ignored by Git and
+excluded from Docker builds.
 
-## Deploying
+Alternatively, `ICE_SERVERS` accepts a WebRTC JSON array. For example, your own
+STUN server can be configured with
+`ICE_SERVERS=[{"urls":"stun:turn.example.org:3478"}]`. Credentials placed directly
+in `ICE_SERVERS` are sent to browsers; prefer `TURN_SECRET` for authenticated TURN.
 
-  To deploy you must first be added to the app engine user list. Then it's simply a matter of using `make`:
+## Develop without Docker
 
-    $ make deploy-webrtcgame
+Install Node.js 24, then:
 
-  Where the `webrtcgame` part depends on the app you want to deploy to. See the Makefile for available options.
+```sh
+npm ci
+npm run build
+npm test
+npm start
+```
 
-### Versioned deploys
+`npm run dev` rebuilds assets and watches the server. Run `npm run build` again
+when editing browser modules, templates, shaders, styles, or translations.
+The Makefile provides `make build`, `make test`, and `make start` wrappers.
 
-  Right now it will automatically increment the version number on each deploy. Simply because it will be easier to refer to a version while doing QA.
+The build uses Pug, Stylus and a small CommonJS bundle loader. Component manifests
+are retained only as lists of browser modules. Original geometry and timing
+helpers are vendored with exact upstream commits and license notices in
+`vendor/`; builds do not use the retired Component package manager or fetch Git
+branches. The original Three.js renderer and game artwork are retained. Geometry
+exports are checked in, so Python 2 is unnecessary.
 
-  If you want to deploy to a specific version (like to version 1 which will be the default) you add `v=` like this:
+## Validation
 
-    $ make deploy-webrtcgame v=1
+`npm test` exercises HTTP serving, safe context rendering, room pairing and
+capacity, signaling, disconnect cleanup and ICE configuration, plus the original
+buffer, input, hash, state-machine and frame-scheduler checks. Assertions cause a
+nonzero exit on failure.
 
-  The version can be anything that can be a subdomain such as "hello-there-123". Which would be accessible at http://hello-there-123.webrtcgame.appspot.com/.
+The optional browser image includes Chromium from signed Debian packages:
 
+```sh
+docker build --target browser-tests -t cubeslam-browser-tests .
+docker run --rm --shm-size=1g cubeslam-browser-tests
+```
 
-## Query string shortcuts
+This suite starts its own server, checks 3D single-player with audio startup, CSS
+fallback gameplay, and two browsers exchanging WebRTC video and game data. It
+also checks disconnect handling and that the app makes no external requests.
+For a locally installed Chromium, use
+`CHROMIUM_EXECUTABLE_PATH=/path/to/chromium npm run test:browser` after building.
+`TEST_BASE_URL` can point the suite at a running instance. Real camera hardware,
+other browser engines, and public NAT/TURN connectivity must be checked on your
+deployment's network.
 
-Add these to the URL querystring to toggle some flags.
+## Useful query options
 
-### Network
+Share the full URL so both players use the same game settings.
 
-  * `buffer` - should the rtc signal buffer candidates before sending them
-  * `signal` - set to `ws` to use the WebSocket signal for rtc
+- `?play` starts single-player immediately.
+- `?silent` skips audio loading.
+- `?mobile` forces the CSS fallback.
+- `?autonav` advances multiplayer prompts automatically, useful for testing.
+- `?dev` opens game settings and debug controls.
+- `?quality=low`, `high`, `best`, or `mobile` changes graphics quality.
+- `?lang=sv` selects a translation.
+- `?round=3`, `?level=2`, `?extras=multiball`, or `?god` adjusts gameplay.
 
-### Multiplayer
-
-  * `autonav` - automatically press buttons to get to the game (use https:// to go all the way without accepting camera more than once)
-  * `render` - set to `sync` to render the sync game in a 2d renderer window
-  * `ai` - turns on the AI for the opponent (not very useful)
-  * `verify` - stores hashes and the states for verification. set to a number (ms) to start an interval which sends them over the network. or use `.`-key to do it manually.
-
-### Singleplayer
-
-  * `play` - go directly to a game against Bob
-
-### Game play
-
-  * `quality` - webgl rendering quality. possible values are `best`, `high`, `low`, `mobile`
-  * `god` - no player can die
-  * `momentum` - set to `off` to turn off paddle momentum
-  * `round` - set to a number to start at that particular round
-  * `extras` - set to a comma separated list of extras to override the level extras.
-  * `framerate` - set to a number to set the games framerate
-  * `speed` - set to a number to set the games unit speed. which all speeds are based upon.
-  * `ns` - the namespace of levels. can be either `single`, `mobile` or `multi`.
-  * `level` - the level to play. can be any number but there's up to 11 scripted levels. after that it'll be randomized.
-
-### Localization
-
-  * `lang` - set to a locale like `en` or `sv` to override the browser locale
-
-### Debug
-
-  * `dev` - enables the settings gui
-  * `see` - set to a path to start at (see `lib/app.js` for available paths)
-  * `mobile` - force mobile
-  * `paused` - start game in paused mode. step forward a frame using `.`-key.
-  * `silent` - don't load in sounds
-  * `dmaf` - turn on dmaf logs
-
+The old `signal=ws` and App Engine options are obsolete; all signaling uses the
+same server as the page. The `/privacy` page describes this version's data flow.

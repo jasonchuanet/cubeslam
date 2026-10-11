@@ -1,0 +1,15 @@
+{
+  "name": "netchan",
+  "repo": "publicclass/netchan",
+  "description": "A NetChan implementation wrapping an unreliable DataChannel.",
+  "version": "0.3.0",
+  "keywords": [],
+  "dependencies": {},
+  "development": {
+    "publicclass/base64-arraybuffer": "*"
+  },
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ]
+}

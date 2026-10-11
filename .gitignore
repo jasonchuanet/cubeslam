@@ -17,3 +17,8 @@ public/lang/*.arb
 server.conf
 *.sublime-workspace
 *.sublime-project
+.env
+.env.*
+!.env.example
+test-results/
+*.log

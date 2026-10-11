@@ -1,20 +1,30 @@
 {
   "name": "cubeslam",
-  "version": "1.0.0",
-  "description": "Play face-to-face against your friends",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "2.0.0",
+  "private": true,
+  "description": "Self-hosted Cube Slam",
+  "engines": {
+    "node": ">=24 <25"
   },
-  "author": "",
-  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node server/index.js",
+    "dev": "npm run build && node --watch server/index.js",
+    "test": "node --test test/server.test.js && node scripts/test-legacy.js",
+    "test:browser": "node test/browser.js"
+  },
+  "dependencies": {
+    "ws": "8.22.0"
+  },
   "devDependencies": {
-    "component": "*",
-    "stylus": "git://github.com/stonebranch/stylus.git",
-    "jade": "0.28.x",
-    "nib": "~0.9.1",
-    "uglify-js": "~2.3.6",
-    "jsdom": "*",
-    "emitter-component": "~1.0.0",
-    "debug": "~0.7.2"
+    "debug": "4.4.3",
+    "emitter-component": "1.1.2",
+    "jquery": "3.7.1",
+    "jsdom": "26.1.0",
+    "mousetrap": "1.6.5",
+    "nib": "1.2.0",
+    "playwright": "1.56.1",
+    "pug": "3.0.3",
+    "stylus": "0.64.0"
   }
 }

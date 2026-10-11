@@ -1,0 +1,16 @@
+{
+  "name": "latency",
+  "repo": "publicclass/latency",
+  "description": "Calculates the latency from an array of times.",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "component/standard-deviation": "*",
+    "publicclass/median": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ]
+}

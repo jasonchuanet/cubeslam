@@ -1,0 +1,17 @@
+# Configure coturn on a server reachable from your players. Replace the realm
+# and shared secret; use the same secret for the application's TURN_SECRET.
+listening-port=3478
+fingerprint
+use-auth-secret
+static-auth-secret=REPLACE_WITH_YOUR_SHARED_SECRET
+realm=turn.example.org
+min-port=49160
+max-port=49260
+no-multicast-peers
+no-loopback-peers
+no-cli
+no-tls
+no-dtls
+# If this server is behind NAT, set external-ip=PUBLIC_IP/PRIVATE_IP.
+# Open TCP/UDP 3478 and UDP 49160-49260 in your firewall.
+# For TURN over TLS, configure cert/pkey, remove no-tls and expose 5349.

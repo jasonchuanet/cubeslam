@@ -1,0 +1,137 @@
+{
+  "component-emitter": {
+    "repository": "component/emitter",
+    "commit": "5890152d82c568bb85d3ea6c3df6c9f817593420",
+    "ref": "5890152d82c568bb85d3ea6c3df6c9f817593420"
+  },
+  "component-cookie": {
+    "repository": "component/cookie",
+    "commit": "a4ff3b21b2d55916ed8eb7e0d7180d187495b719",
+    "ref": "a4ff3b21b2d55916ed8eb7e0d7180d187495b719"
+  },
+  "component-preloader": {
+    "repository": "component/preloader",
+    "commit": "ab538eba66921839af4c712ce03a2c345d8e24f9",
+    "ref": "ab538eba66921839af4c712ce03a2c345d8e24f9"
+  },
+  "publicclass-request-animation-frame": {
+    "repository": "publicclass/request-animation-frame",
+    "commit": "de36484d2792f584d33779c7b7c5bcb174492d85",
+    "ref": "de36484d2792f584d33779c7b7c5bcb174492d85"
+  },
+  "publicclass-now": {
+    "repository": "publicclass/now",
+    "commit": "a7f4c355a229638a66aba89a4f890730e8c8a958",
+    "ref": "a7f4c355a229638a66aba89a4f890730e8c8a958"
+  },
+  "publicclass-geom": {
+    "repository": "publicclass/geom",
+    "commit": "bc3bef1b003122980aa85e0a80541869ea8b18b7",
+    "ref": "bc3bef1b003122980aa85e0a80541869ea8b18b7"
+  },
+  "publicclass-copy": {
+    "repository": "publicclass/copy",
+    "commit": "9679fa39559ebb083798333ab9671a99fd544af3",
+    "ref": "9679fa39559ebb083798333ab9671a99fd544af3"
+  },
+  "publicclass-stash": {
+    "repository": "publicclass/stash",
+    "commit": "11937d8d51bd70d9eac0c6ddd0e584c6d9b393b8",
+    "ref": "11937d8d51bd70d9eac0c6ddd0e584c6d9b393b8"
+  },
+  "publicclass-netchan": {
+    "repository": "publicclass/netchan",
+    "commit": "38b54281aa2d846ff847485d0bb1e51306dfcfad",
+    "ref": "38b54281aa2d846ff847485d0bb1e51306dfcfad"
+  },
+  "publicclass-latency": {
+    "repository": "publicclass/latency",
+    "commit": "258401965f4700832b1eed3e7b5d394647cd62d6",
+    "ref": "258401965f4700832b1eed3e7b5d394647cd62d6"
+  },
+  "publicclass-base64-arraybuffer": {
+    "repository": "publicclass/base64-arraybuffer",
+    "commit": "0e0ccfc29a4849c2ecc188c9306f3a5a1cc933e3",
+    "ref": "0e0ccfc29a4849c2ecc188c9306f3a5a1cc933e3"
+  },
+  "visionmedia-debug": {
+    "repository": "visionmedia/debug",
+    "commit": "7d6781517f2fd947a64a38e8d28670b6ddedb9a1",
+    "ref": "7d6781517f2fd947a64a38e8d28670b6ddedb9a1"
+  },
+  "ecarter-css-emitter": {
+    "repository": "ecarter/css-emitter",
+    "commit": "4a453ae914a2cf328810fdf3fc361bc144b15821",
+    "ref": "4a453ae914a2cf328810fdf3fc361bc144b15821"
+  },
+  "visionmedia-batch": {
+    "repository": "visionmedia/batch",
+    "commit": "2cd4f4fa34f6e97154eede685f1e47e3d44d7f07",
+    "ref": "2cd4f4fa34f6e97154eede685f1e47e3d44d7f07"
+  },
+  "component-inherit": {
+    "repository": "component/inherit",
+    "commit": "c49c723aaa5b66d7a4e1dcfe96440ebd85b5bfe9",
+    "ref": "c49c723aaa5b66d7a4e1dcfe96440ebd85b5bfe9"
+  },
+  "publicclass-geom-vec": {
+    "repository": "publicclass/geom-vec",
+    "commit": "dff577275ec2624cb3ca21455433ebfe1028cf1a",
+    "ref": "dff577275ec2624cb3ca21455433ebfe1028cf1a"
+  },
+  "publicclass-geom-mat": {
+    "repository": "publicclass/geom-mat",
+    "commit": "022c72dfe8b294b04db532f6d68a6f592dfe2d28",
+    "ref": "022c72dfe8b294b04db532f6d68a6f592dfe2d28"
+  },
+  "publicclass-geom-poly": {
+    "repository": "publicclass/geom-poly",
+    "commit": "920005f8dd98ee60123960b5c09a8d7b5d85c237",
+    "ref": "920005f8dd98ee60123960b5c09a8d7b5d85c237"
+  },
+  "component-type": {
+    "repository": "component/type",
+    "commit": "20fbf6f8d6a36e415940380c14b4ea245de037ec",
+    "ref": "20fbf6f8d6a36e415940380c14b4ea245de037ec"
+  },
+  "component-standard-deviation": {
+    "repository": "component/standard-deviation",
+    "commit": "0c3e3bd3f3157c7b46475bf87fa142f509a11d80",
+    "ref": "0c3e3bd3f3157c7b46475bf87fa142f509a11d80"
+  },
+  "publicclass-median": {
+    "repository": "publicclass/median",
+    "commit": "e7c9f24ce0df374b2c54ff7dc59a101ff9c94406",
+    "ref": "e7c9f24ce0df374b2c54ff7dc59a101ff9c94406"
+  },
+  "guille-ms.js": {
+    "repository": "guille/ms.js",
+    "commit": "83756a9c6831fe86a0eae91541eea5029b65483c",
+    "ref": "0.6.1"
+  },
+  "component-event": {
+    "repository": "component/event",
+    "commit": "fa60a092b3670ae2e62bfd3620dc2b7196098b3c",
+    "ref": "fa60a092b3670ae2e62bfd3620dc2b7196098b3c"
+  },
+  "component-variance": {
+    "repository": "component/variance",
+    "commit": "89d2fb8f52b85c335b9017fcc6f6cc9cda2039a2",
+    "ref": "89d2fb8f52b85c335b9017fcc6f6cc9cda2039a2"
+  },
+  "component-to-function": {
+    "repository": "component/to-function",
+    "commit": "9379f8d112ff90bb7c284821a8abfb00ffb6f128",
+    "ref": "9379f8d112ff90bb7c284821a8abfb00ffb6f128"
+  },
+  "component-mean": {
+    "repository": "component/mean",
+    "commit": "01619096228fd62759b370bd1054a66cacf35b03",
+    "ref": "01619096228fd62759b370bd1054a66cacf35b03"
+  },
+  "component-props": {
+    "repository": "component/props",
+    "commit": "e45d06d3b2827013035a992963e0e46000e96e45",
+    "ref": "e45d06d3b2827013035a992963e0e46000e96e45"
+  }
+}

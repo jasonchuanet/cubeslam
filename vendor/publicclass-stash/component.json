@@ -1,0 +1,13 @@
+{
+  "name": "stash",
+  "repo": "publicclass/stash",
+  "description": "A hash-like data structure that keeps the values in a dense unordered array.",
+  "version": "0.3.1",
+  "keywords": [],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ]
+}

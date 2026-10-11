@@ -1,95 +1,56 @@
-var Tick = require('../lib/support/tick')
-  , tick = new Tick()
-  , queue = []
-  , times = []
-  , running = false;
-
-test(function(next){
-  tick.setTimeout(function(){
-    next();
-  },200)
-},200)
-
-test(function(next){
-  var id = tick.setTimeout(function(){
-    console.assert(false,'this should never happen')
-  },200)
-  tick.clearTimeout(id);
-  setTimeout(next,500);
-},500)
-
-test(function(next){
-  var times = 5
-    , t = now();
-  tick.setInterval(function(){
-    var n = now()
-    console.log('interval',times,n-t)
-    t = n;
-    --times || next()
-  },20)
-},100)
-
-test(function(next){
-  var times = 5
-    , t = now()
-    , id;
-  id = tick.setInterval(function(){
-    --times;
-    tick.clearInterval(id);
-  },20)
-  setTimeout(function(){
-    console.assert(times == 4,'should only have been called once:'+times)
-    next()
-  },100)
-},100)
-
-var world = {frame: 0}
-  , total = 0
-  , t = now();
-var interval = setInterval(function(){
-  total += now()-t;
-  world.frame++;
-  tick.update(world)
-},1000/60)
-tick.update(world)
-console.log('running at framerate:',1000/60)
-
-function test(fn,time){
-  queue.push(fn);
-  times.push(time);
-  if( !running ){
-    running = true;
-    next();
+// Tick schedules named actions by simulation frame, independent of wall time.
+const assert = require("node:assert/strict");
+const Tick = require("../lib/support/tick");
+const actions = require("../lib/actions");
+const tick = new Tick();
+const world = { frame: 0 };
+const calls = [];
+actions.testTick = (w, value) => calls.push([w.frame, value]);
+function advance(frames) {
+  for (let i = 0; i < frames; i++) {
+    world.frame++;
+    tick.update(world);
   }
 }
-function next(err){
-  console.assert(!err,err && err.message);
-  var fn = queue.shift()
-    , time = times.shift()
-    , t = now();
-  if( fn ){
-    var timedOut = false;
-    var timeout = setTimeout(function(){
-      timedOut = true;
-      next(new Error('timed out'))
-    },3000)
-    fn(function(err){
-      tick.reset()
-      clearTimeout(timeout)
-      if( timedOut ) return;
-      var took = now()-t;
-      // allow it to be 15ms off
-      if( Math.abs(took-time) > 15 )
-        err = new Error('tick is off too much. expected '+time+'ms was '+took+'ms')
-      next(err);
-    })
-  } else {
-    // done!
-    clearInterval(interval);
-  }
-}
-function now(){
-  return typeof performance == 'undefined'
-    ? Date.now()
-    : performance.now()
-}
+
+tick.setTimeout("testTick", 200, "timeout");
+tick.update(world);
+advance(11);
+assert.equal(calls.length, 0);
+advance(1);
+assert.deepEqual(calls, [[12, "timeout"]]);
+advance(1);
+assert.equal(calls.length, 1);
+
+const canceled = tick.setTimeout("testTick", 100, "canceled before update");
+tick.clearTimeout(canceled);
+tick.update(world);
+advance(6);
+assert.equal(calls.length, 1);
+const pending = tick.setTimeout("testTick", 100, "canceled after update");
+tick.update(world);
+tick.clearTimeout(pending);
+advance(6);
+assert.equal(calls.length, 1);
+
+const start = world.frame;
+const interval = tick.setInterval("testTick", 100, "interval");
+tick.update(world);
+advance(18);
+assert.deepEqual(calls.slice(1), [
+  [start + 6, "interval"],
+  [start + 12, "interval"],
+  [start + 18, "interval"],
+]);
+tick.clearInterval(interval);
+advance(6);
+assert.equal(calls.length, 4);
+
+tick.nextFrame("testTick", "next frame");
+tick.update(world);
+assert.deepEqual(calls.at(-1), [world.frame, "next frame"]);
+tick.setTimeout("testTick", 100, "reset");
+tick.reset();
+advance(12);
+assert.equal(calls.length, 5);
+delete actions.testTick;

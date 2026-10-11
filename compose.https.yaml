@@ -1,0 +1,19 @@
+services:
+  proxy:
+    image: caddy:2.10.2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: "${DOMAIN:?Set DOMAIN to the public hostname for this server}"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - cubeslam
+    restart: unless-stopped
+volumes:
+  caddy_data:
+  caddy_config:

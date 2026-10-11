@@ -25,6 +25,28 @@ URL. A room accepts two players and exists only while they are connected.
 Restarting the server disconnects players and clears all rooms. Use one server
 instance; multiple replicas need shared signaling and are not supported.
 
+## Published container images
+
+The [container workflow](.github/workflows/container.yml) builds and publishes
+AMD64 and ARM64 runtime images to `ghcr.io/jasonchuanet/cubeslam` using GitHub's
+built-in `GITHUB_TOKEN`; no separate registry secret is needed. Pushes to `master`
+publish `latest` and a `sha-<commit>` tag. Version tags such as `v2.0.0` also
+publish `v2.0.0`, `2.0.0`, and `2.0` image tags. Pull requests build the image
+without publishing. Manual runs on `master` can republish it.
+
+After the first successful publish, set the GHCR package's visibility to public
+in GitHub package settings if you want unauthenticated pulls. Private packages
+require `docker login ghcr.io` with a token allowed to read the package.
+
+```sh
+docker run -d --name cubeslam --restart unless-stopped \
+  --init --read-only --cap-drop=ALL --security-opt=no-new-privileges \
+  -p 127.0.0.1:8080:8080 ghcr.io/jasonchuanet/cubeslam:latest
+```
+
+The published image uses the same runtime and configuration options as the
+locally built image. Use HTTPS and your own TURN relay where required below.
+
 ## Public hosting and HTTPS
 
 Camera and microphone access require a secure browser context: localhost or

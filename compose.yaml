@@ -1,9 +1,6 @@
 services:
   cubeslam:
-    image: cubeslam-selfhost:latest
-    build:
-      context: .
-      target: runtime
+    image: ghcr.io/jasonchuanet/cubeslam:latest
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${PORT:-8080}:8080"
     environment:

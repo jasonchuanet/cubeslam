@@ -1,105 +1,49 @@
 # Cube Slam
 
 Cube Slam is a browser game you can play against Bob the bear or face-to-face
-with a friend. This version runs on your own server with Node.js 24 and Docker.
-It requires no Google Cloud account, App Engine SDK, database, hosted signaling
-service, remote fonts, or analytics. All game assets are served locally.
+with a friend. This self-hosted version of the original
+[Cube Slam](https://code.google.com/archive/p/cubeslam/) runs on your own server.
 
-## Run with Docker
+The app uses JavaScript, Three.js/WebGL with a CSS fallback, and WebRTC for video
+and multiplayer game data. A Node.js 24 server serves the assets and handles
+WebSocket signaling; Pug and Stylus build the templates and styles. No cloud
+account or database is required.
 
-Install Docker Engine and Docker Compose, then run:
+## Get started
 
-```sh
-docker compose up --build -d
-docker compose logs -f cubeslam
-```
-
-Open port 8080 on the same machine. The default binding is `127.0.0.1`; set
-`BIND_ADDRESS=0.0.0.0` to expose development HTTP on your network. The image builds
-the app and runs the backend and simulation tests before producing a non-root,
-read-only runtime. `GET /healthz` is the health check. Stop with
-`docker compose down`.
-
-Click **Play A Bear** for single-player or **Play A Friend** and share the room
-URL. A room accepts two players and exists only while they are connected.
-Restarting the server disconnects players and clears all rooms. Use one server
-instance; multiple replicas need shared signaling and are not supported.
-
-## Published container images
-
-The [container workflow](.github/workflows/container.yml) builds and publishes
-AMD64 and ARM64 runtime images to `ghcr.io/jasonchuanet/cubeslam` using GitHub's
-built-in `GITHUB_TOKEN`; no separate registry secret is needed. Pushes to `master`
-publish `latest` and a `sha-<commit>` tag. Version tags such as `v2.0.0` also
-publish `v2.0.0`, `2.0.0`, and `2.0` image tags. Pull requests build the image
-without publishing. Manual runs on `master` can republish it.
-
-After the first successful publish, set the GHCR package's visibility to public
-in GitHub package settings if you want unauthenticated pulls. Private packages
-require `docker login ghcr.io` with a token allowed to read the package.
+Install Docker Engine and Docker Compose, then:
 
 ```sh
-docker run -d --name cubeslam --restart unless-stopped \
-  --init --read-only --cap-drop=ALL --security-opt=no-new-privileges \
-  -p 127.0.0.1:8080:8080 ghcr.io/jasonchuanet/cubeslam:latest
+git clone https://github.com/jasonchuanet/cubeslam.git
+cd cubeslam
+docker compose pull
+docker compose up -d
 ```
 
-The published image uses the same runtime and configuration options as the
-locally built image. Use HTTPS and your own TURN relay where required below.
-
-## Public hosting and HTTPS
-
-Camera and microphone access require a secure browser context: localhost or
-HTTPS. HTTP on a remote IP address is sufficient for single-player, but browsers
-will deny the camera needed for face-to-face multiplayer. Use current Chromium,
-Firefox, or Safari with WebRTC enabled; the automated browser suite uses Chromium.
-
-You can put the app behind an existing HTTPS reverse proxy. Preserve the `Host`
-header and forward WebSocket upgrades for `/signal` to port 8080. An optional
-Caddy configuration handles both WebSockets and automatic TLS:
+Open [localhost:8080](http://localhost:8080). Choose **Play A Bear** for
+single-player or **Play A Friend** and share the room URL for multiplayer.
+Compose uses the public `ghcr.io/jasonchuanet/cubeslam:latest` image, available for
+AMD64 and ARM64.
 
 ```sh
-# Point this hostname's DNS at your server and open TCP 80/443.
-DOMAIN=slam.example.org docker compose -f compose.yaml -f compose.https.yaml up --build -d
+docker compose logs -f cubeslam  # View logs
+docker compose down            # Stop the app
 ```
 
-Caddy retains its TLS certificates in named volumes. The application itself uses
-no external service. Caddy's automatic certificate issuance contacts an ACME
-certificate authority; you can use your own reverse proxy and certificates.
+## Host for friends
 
-## Your own STUN/TURN relay
+The default port is bound to localhost. Camera and microphone access require
+HTTPS when hosting remotely. The [self-hosting guide](docs/self-hosting.md)
+covers the included Caddy HTTPS configuration, network settings, and an optional
+TURN relay for players behind restrictive networks. Copy [.env.example](.env.example)
+to `.env` to customize settings.
 
-The default `ICE_SERVERS=[]` uses direct peer connections and makes no request
-to a third-party STUN or TURN provider. It works when the players' browsers can
-reach one another, such as on the same network. Players behind different NATs,
-restrictive firewalls, or a browser policy that blocks direct UDP may need TURN.
+Rooms are held in memory: restarting the server disconnects players. Run one app
+instance.
 
-Run your own [coturn](https://github.com/coturn/coturn) server. A starting
-configuration is in `deploy/turnserver.conf.example`; set its public address,
-realm and shared secret, and open its listening and relay ports. For networks
-that block UDP, configure coturn's TCP or TLS listener as appropriate.
+## Develop and contribute
 
-Copy `.env.example` to `.env` and set:
-
-```dotenv
-TURN_URLS=turn:turn.example.org:3478?transport=udp,turn:turn.example.org:3478?transport=tcp
-TURN_SECRET=the-same-secret-configured-in-coturn
-```
-
-The application gives browsers credentials that expire after one hour. It never
-sends the shared secret to a browser. This is a guest game: anyone who can access
-the app can obtain a temporary relay credential, so restrict access to the app
-or relay if you are hosting for a private group. `.env` is ignored by Git and
-excluded from Docker builds.
-
-Alternatively, `ICE_SERVERS` accepts a WebRTC JSON array. For example, your own
-STUN server can be configured with
-`ICE_SERVERS=[{"urls":"stun:turn.example.org:3478"}]`. Credentials placed directly
-in `ICE_SERVERS` are sent to browsers; prefer `TURN_SECRET` for authenticated TURN.
-
-## Develop without Docker
-
-Install Node.js 24, then:
+Install Node.js 24, then run:
 
 ```sh
 npm ci
@@ -108,61 +52,12 @@ npm test
 npm start
 ```
 
-`npm run dev` rebuilds assets and watches the server. Run `npm run build` again
-when editing browser modules, templates, shaders, styles, or translations.
-The Makefile provides `make build`, `make test`, and `make start` wrappers.
-
-The build uses Pug, Stylus and a small CommonJS bundle loader. Component manifests
-are retained only as lists of browser modules. Original geometry and timing
-helpers are vendored with exact upstream commits and license notices in
-`vendor/`; builds do not use the retired Component package manager or fetch Git
-branches. The original Three.js renderer and game artwork are retained. Geometry
-exports are checked in, so Python 2 is unnecessary.
-
-## Validation
-
-`npm test` exercises HTTP serving, safe context rendering, room pairing and
-capacity, signaling, disconnect cleanup and ICE configuration, plus the original
-buffer, input, hash, state-machine and frame-scheduler checks. Assertions cause a
-nonzero exit on failure.
-
-The optional browser image includes Chromium from signed Debian packages:
-
-```sh
-docker build --target browser-tests -t cubeslam-browser-tests .
-docker run --rm --shm-size=1g cubeslam-browser-tests
-```
-
-This suite starts its own server, checks 3D single-player with audio startup, CSS
-fallback gameplay, and two browsers exchanging WebRTC video and game data. It
-also checks disconnect handling and that the app makes no external requests.
-For a locally installed Chromium, use
-`CHROMIUM_EXECUTABLE_PATH=/path/to/chromium npm run test:browser` after building.
-`TEST_BASE_URL` can point the suite at a running instance. Real camera hardware,
-other browser engines, and public NAT/TURN connectivity must be checked on your
-deployment's network.
-
-## Useful query options
-
-Share the full URL so both players use the same game settings.
-
-- `?play` starts single-player immediately.
-- `?silent` skips audio loading.
-- `?mobile` forces the CSS fallback.
-- `?autonav` advances multiplayer prompts automatically, useful for testing.
-- `?dev` opens game settings and debug controls.
-- `?quality=low`, `high`, `best`, or `mobile` changes graphics quality.
-- `?lang=sv` selects a translation.
-- `?round=3`, `?level=2`, `?extras=multiball`, or `?god` adjusts gameplay.
-
-The old `signal=ws` and App Engine options are obsolete; all signaling uses the
-same server as the page. The `/privacy` page describes this version's data flow.
+Rebuild assets with `npm run build` after frontend changes. The
+[development guide](docs/development.md) covers local Docker builds, browser tests,
+and debugging options. Contributions are welcome: describe the change, include
+steps to reproduce bugs, and run the relevant tests before submitting a pull
+request.
 
 ## License
 
-Cube Slam is licensed under the [MIT License](LICENSE). The original
-[package.json](https://github.com/jasonchuanet/cubeslam/blob/2fca60d911cb5b02786aeb24c9a789f555047378/package.json)
-declares `"license": "MIT"`; the original project is also preserved in the
-[Google Code archive](https://code.google.com/archive/p/cubeslam/).
-Bundled third-party code retains its own license notices, including those in
-`vendor/` and the Apache-2.0 notice in `lib/arb.js`.
+[MIT](LICENSE). Bundled third-party code retains its own license notices.

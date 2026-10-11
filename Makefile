@@ -16,7 +16,7 @@ dev: node_modules
 	npm run dev
 
 docker:
-	docker compose up --build -d
+	docker compose -f compose.yaml -f compose.build.yaml up --build -d
 
 clean:
 	rm -rf build

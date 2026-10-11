@@ -1,0 +1,7 @@
+services:
+  cubeslam:
+    image: cubeslam-selfhost:latest
+    pull_policy: build
+    build:
+      context: .
+      target: runtime

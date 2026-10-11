@@ -135,3 +135,12 @@ Share the full URL so both players use the same game settings.
 
 The old `signal=ws` and App Engine options are obsolete; all signaling uses the
 same server as the page. The `/privacy` page describes this version's data flow.
+
+## License
+
+Cube Slam is licensed under the [MIT License](LICENSE). The original
+[package.json](https://github.com/jasonchuanet/cubeslam/blob/2fca60d911cb5b02786aeb24c9a789f555047378/package.json)
+declares `"license": "MIT"`; the original project is also preserved in the
+[Google Code archive](https://code.google.com/archive/p/cubeslam/).
+Bundled third-party code retains its own license notices, including those in
+`vendor/` and the Apache-2.0 notice in `lib/arb.js`.
